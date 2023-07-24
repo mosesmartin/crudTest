@@ -46,6 +46,35 @@ app.delete('/api/books/:id', (req, res) => {
   res.sendStatus(204);
 });
 
+
+// Search for books by bookName, author, or genre
+app.get('/api/books/search', (req, res) => {
+  const searchQuery = req.query.q; // Get the search query from the URL parameter "q"
+
+  if (!searchQuery) {
+    return res.status(400).json({ error: 'Search query parameter "q" is missing.' });
+  }
+
+  // Perform a case-insensitive search on bookName, author, and genre
+  const searchResult = books.filter(
+    (book) =>
+      book.bookName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.genre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (searchResult.length === 0) {
+    return res.status(404).json({ error: 'No books found matching the search query.' });
+  }
+
+  res.json(searchResult);
+});
+
+
+
+
+
+//to start the server type node index.js
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

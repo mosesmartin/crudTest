@@ -10,6 +10,7 @@ const BookCrud = () => {
     genre: '',
   });
   const [editingBookId, setEditingBookId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchBooks();
@@ -64,9 +65,41 @@ const BookCrud = () => {
     }
   };
 
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const searchBooks = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/books/search?q=${searchQuery}`);
+      setBooks(response.data);
+    } catch (error) {
+      console.error('Error searching books:', error);
+    }
+  };
+
   return (
     <div>
       <h2>Book CRUD</h2>
+
+      {/* Search Form */}
+      <Form>
+        <Row>
+          <Col>
+            <Form.Control
+              type="text"
+              name="searchQuery"
+              placeholder="Search by book name, author, or genre"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </Col>
+          <Col>
+            <Button onClick={searchBooks}>Search</Button>
+          </Col>
+        </Row>
+      </Form>
+
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -118,6 +151,7 @@ const BookCrud = () => {
           ))}
         </tbody>
       </Table>
+
       <Form>
         <Row>
           <Col>
